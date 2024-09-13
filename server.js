@@ -36,16 +36,18 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("addToDo", async (data) => {
-
+    socket.on("addTodo", async (data) => {
+        console.log("data: " + data)
         const toDo = new Task({
-            text: data.text,
+            text: data,
         })
-
+        console.log("toDo created is: "+ toDo)
         await toDo.save();
+        const taskId = toDo._id;
+        console.log(taskId.toString())
 
         // Broadcast the received toDo to all users in the same room
-        socket.broadcast.emit("newTodoAdded", data.text);
+        socket.emit("newTodoAdded", {text: data, completed: false, id:taskId.toString()});
     });
 
     socket.on("deleteToDo", async (data) => {
