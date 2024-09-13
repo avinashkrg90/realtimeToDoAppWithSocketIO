@@ -1,0 +1,70 @@
+<!-- no need to change the prewritten code.
+complete the script tag code. -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Task Management App</title>
+</head>
+
+<body>
+    <h1>Todo List App for real time sharing</h1>
+    <div id="task-form">
+        <!-- Create a form to add new tasks -->
+        <form id="create-task-form">
+            <input type="text" id="task-text" placeholder="Enter a new task" required>
+            <button id="create-task" type="submit">Add Task</button>
+        </form>
+    </div>
+
+    <div id="task-list">
+        <!-- Tasks will be displayed here -->
+        <!-- <div>
+            <input type="checkbox" id="task1" data-id="12" class="custom-checkbox">
+            <label for="task1">Buy groceries</label>
+            <button id="update-task" type="submit">Update</button>
+            <button id="delete-task" type="submit">Delete</button>
+        </div> -->
+    </div>
+
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://localhost:3000');
+
+        // -------------------write your code here.--------------------
+        const taskInput = document.getElementById("task-text");
+        const taskCreateBtn = document.getElementById("create-task");
+        const taskList = document.getElementById("task-list");
+
+        function addTaskToView(toDo) {
+            let taskDiv = document.createElement('div');
+            taskDiv.innerHTML = `
+                    <input type="checkbox" id="${toDo.id}" ${toDo.completed ? 'checked' : ''} data-id="${toDo.id}" class="custom-checkbox">
+                    <label for="${toDo.id}">${toDo.title}</label>
+                    <button id="updateBtn${toDo.id}" data-id="${toDo.id}" type="submit" class="delete">Update</button>
+                    <button id="deleteBtn${toDo.id}" data-id="${toDo.id}" type="submit" class="update">Delete</button>
+                `;
+            taskList.appendChild(taskDiv);
+        }
+
+        // Event handler for the task form
+        create-task-form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const task = taskInput.value;
+            // Emit a 'sendMessage' event to send the message to the server
+            socket.emit('addTodo', task);
+
+            taskInput.value = '';
+        });
+
+        socket.on('addToDo', (toDo) => {
+            addTaskToView(toDo);
+        });
+
+
+
+    </script>
+</body>
+
+</html>
