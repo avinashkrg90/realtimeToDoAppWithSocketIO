@@ -13,14 +13,24 @@ complete the script tag code. -->
         }
 
         #container {
-            width: 600px;
-            /* margin: 0 auto; */
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #153677, #4e085f);
+            padding: 10px;
         }
 
-        #task-list > div {
+        #todo-app {
+            width: 100%;
+            max-width: 650px;
+            background: #f8effd;
+            margin: 100px auto 20px;
+            padding: 40px 30px 70px;
+            border-radius: 10px;
+        }
+
+        #task-list>div {
             padding: 5px;
-            /* padding-left: 0; */
-            border: 1px solid #ebeaea;
+            border-bottom: 1px solid #f0d5ff;
             display: flex;
             justify-content: space-between;
             align-items: inherit;
@@ -28,7 +38,7 @@ complete the script tag code. -->
         }
 
         #task-list div:hover {
-            background: #f3f3f3;
+            background: #f0d5ff;
         }
 
         #task-list div input {
@@ -47,7 +57,7 @@ complete the script tag code. -->
 
         #task-list div label:before {
             content: '';
-            -webkit-appearance: none;
+            /* -webkit-appearance: none; */
             background-color: transparent;
             border: 2px solid #0079bf;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
@@ -83,12 +93,13 @@ complete the script tag code. -->
         .delete {
             /* height: 28px; */
             padding: 5px 10px;
-            border-radius: 3px;
+            border-radius: 5px;
             background: #e4a32b;
             color: black;
             margin-left: 15px;
             font-size: 15px;
             padding: 11px;
+            border: none;
         }
 
         .delete:hover {
@@ -99,12 +110,14 @@ complete the script tag code. -->
         .update {
             /* height: 28px; */
             padding: 5px 10px;
-            border-radius: 3px;
+            border-radius: 5px;
             background: #40e849;
             color: black;
             margin-left: 15px;
             font-size: 15px;
             padding: 11px;
+            /* outline: none; */
+            border: none;
         }
 
         .update:hover {
@@ -117,8 +130,11 @@ complete the script tag code. -->
             text-align: center;
         }
 
-        #create-task-form{
+        #create-task-form {
             margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         #create-task-form input {
@@ -131,7 +147,7 @@ complete the script tag code. -->
         }
 
         #create-task-form button {
-            width: 15%;
+            width: 17%;
             outline: none;
             font-size: 15px;
             padding: 11px;
@@ -141,7 +157,6 @@ complete the script tag code. -->
         }
 
         #create-task-form button:hover {
-            width: 15%;
             outline: none;
             font-size: 15px;
             padding: 11px;
@@ -154,25 +169,24 @@ complete the script tag code. -->
 
 <body>
     <div id="container">
-        <h1>Todo List App for real time sharing</h1>
-        <div id="task-form">
-            <!-- Create a form to add new tasks -->
-            <form id="create-task-form">
-                <input type="text" id="task-text" placeholder="Enter a new task" required>
-                <button id="create-task" type="submit">Add Task</button>
-            </form>
-        </div>
+        <div id="todo-app">
+            <h1>Todo List App for real time sharing</h1>
+            <div id="task-form">
+                <!-- Create a form to add new tasks -->
+                <form id="create-task-form">
+                    <input type="text" id="task-text" placeholder="Enter a new task" required>
+                    <button id="create-task" type="submit">Add Task</button>
+                </form>
+            </div>
 
-        <div id="task-list">
-            <!-- Tasks will be displayed here -->
-            <!-- <div>
+            <div id="task-list">
+                <!-- Tasks will be displayed here -->
+                <!-- <div>
             <input type="checkbox" id="task1" data-id="12" class="custom-checkbox">
             <label for="task1">Buy groceries</label>
-            <div>
-                <button id="update-task" type="submit">Update</button>
-                <button id="delete-task" type="submit">Delete</button>
-            </div>
+            <button id="delete-task" type="submit">Delete</button>
         </div> -->
+            </div>
         </div>
     </div>
 
@@ -186,36 +200,53 @@ complete the script tag code. -->
         const taskList = document.getElementById("task-list");
         const createTaskForm = document.getElementById("create-task-form")
 
-        function addTaskToView(toDo) {
-            console.log(toDo)
+        function addTaskDOM(toDo) {
             let taskDiv = document.createElement('div');
+            taskDiv.id = `div${toDo.id}`;
             taskDiv.innerHTML = `
                     <input type="checkbox" id="${toDo.id}" ${toDo.completed ? 'checked' : ''} data-id="${toDo.id}" class="custom-checkbox">
                     <label for="${toDo.id}">${toDo.text}</label>
-                    <div>
-                        <button id="updateBtn${toDo.id}" data-id="${toDo.id}" type="submit" class="delete">Update</button>
-                        <button id="deleteBtn${toDo.id}" data-id="${toDo.id}" type="submit" class="update">Delete</button>
-                    </div>
+                    
+                        <button id="${toDo.id}" data-id="${toDo.id}" class="delete">Delete</button>
+                
                 `;
             taskList.appendChild(taskDiv);
         }
 
-        // Event handler for the task form
+        function deleteTaskDOM(taskId) {
+            let divToBeRemoved = document.getElementById(`div${taskId}`);
+            divToBeRemoved.remove();
+        }
+
+        taskList.addEventListener("click", function (e) {
+            if (e.target.className == 'delete') {
+                const targetId = e.target.id;
+                const taskId = targetId;
+                socket.emit('deleteTodo', taskId);
+            }
+            if (e.target.className == 'delete') {
+                const targetId = e.target.id;
+                const taskId = targetId;
+                socket.emit('deleteTodo', taskId);
+            }
+
+
+        }, false);
+
         createTaskForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const task = taskInput.value;
-            // Emit a 'sendMessage' event to send the message to the server
-            console.log(`submit button is pressed, and the task is '${task}'`)
             socket.emit('addTodo', task);
-
             taskInput.value = '';
         });
 
         socket.on('newTodoAdded', (toDo) => {
-            addTaskToView(toDo);
+            addTaskDOM(toDo);
         });
 
-
+        socket.on('deleteTask', (taskId) => {
+            deleteTaskDOM(taskId);
+        });
 
     </script>
 </body>
