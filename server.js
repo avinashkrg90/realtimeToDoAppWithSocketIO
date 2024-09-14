@@ -21,16 +21,9 @@ io.on("connection", (socket) => {
     console.log("Connection made.");
 
     socket.on("join", async (data) => {
-      
-        // Broadcast a message to all other users in the same room
-        socket.broadcast.to(data.room).emit("message", {
-            text: `${data.username} has joined the room.`
-        });
-
         try{
-            const toDos = await Task.find().sort({createdAt:1}).limit(50);
-            // console.log(toDos);
-            socket.emit('previousToDos', toDos)
+            const tasks = await Task.find().sort({createdAt:1});
+            socket.emit('previousTasks', tasks)
         }catch(err){
             console.log(err)
         }

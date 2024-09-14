@@ -237,7 +237,14 @@ complete the script tag code. -->
             toggleTaskDOM(taskData.taskId, taskData.completed);
         });
 
-
+        socket.on('previousTasks', (tasks) => {
+            tasks.forEach(task => {
+                addTaskDOM(task);
+            });
+        });
+    
+        socket.emit('join')
+        
     </script>
 </body>
 
