@@ -52,16 +52,16 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("deleteTask", taskId);
     });
 
-    socket.on("updateToDo", async (data) => {
+    socket.on("toggleTodo", async (taskId) => {
+        const task = await Task.findById(taskId);
+        if (task.completed){
+            task.completed = false;
+        }else{
+            task.completed = true;
+        }
+        await task.save();
 
-        const toDo = new Task({
-            text: data.text,
-        })
-
-        await toDo.save();
-
-        // Broadcast the received toDo to all users in the same room
-        socket.broadcast.emit("newTodoAdded", data.text);
+        socket.broadcast.emit("toggleTask", {taskId: taskId, completed : task.completed});
     });
 
     socket.on("disconnect", () => {

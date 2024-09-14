@@ -107,25 +107,6 @@ complete the script tag code. -->
             cursor: pointer;
         }
 
-        .update {
-            /* height: 28px; */
-            padding: 5px 10px;
-            border-radius: 5px;
-            background: #40e849;
-            color: black;
-            margin-left: 15px;
-            font-size: 15px;
-            padding: 11px;
-            /* outline: none; */
-            border: none;
-        }
-
-        .update:hover {
-            background: rgb(135, 239, 166);
-            cursor: pointer;
-
-        }
-
         h1 {
             text-align: center;
         }
@@ -182,10 +163,10 @@ complete the script tag code. -->
             <div id="task-list">
                 <!-- Tasks will be displayed here -->
                 <!-- <div>
-            <input type="checkbox" id="task1" data-id="12" class="custom-checkbox">
-            <label for="task1">Buy groceries</label>
-            <button id="delete-task" type="submit">Delete</button>
-        </div> -->
+                    <input type="checkbox" id="task1" data-id="12" class="custom-checkbox">
+                    <label for="task1">Buy groceries</label>
+                    <button id="delete-task" type="submit">Delete</button>
+                </div> -->
             </div>
         </div>
     </div>
@@ -206,9 +187,7 @@ complete the script tag code. -->
             taskDiv.innerHTML = `
                     <input type="checkbox" id="${toDo.id}" ${toDo.completed ? 'checked' : ''} data-id="${toDo.id}" class="custom-checkbox">
                     <label for="${toDo.id}">${toDo.text}</label>
-                    
-                        <button id="${toDo.id}" data-id="${toDo.id}" class="delete">Delete</button>
-                
+                    <button id="${toDo.id}" data-id="${toDo.id}" class="delete">Delete</button>
                 `;
             taskList.appendChild(taskDiv);
         }
@@ -218,19 +197,25 @@ complete the script tag code. -->
             divToBeRemoved.remove();
         }
 
+        function toggleTaskDOM(taskId, completed) {
+            const checkBox = document.getElementById(`div${taskId}`).querySelector('.custom-checkbox')
+            if (completed)
+                checkBox.checked = true;
+            else   
+                checkBox.checked = false;
+        }
+
         taskList.addEventListener("click", function (e) {
             if (e.target.className == 'delete') {
                 const targetId = e.target.id;
                 const taskId = targetId;
                 socket.emit('deleteTodo', taskId);
             }
-            if (e.target.className == 'delete') {
+            if (e.target.tagName === "INPUT") {
                 const targetId = e.target.id;
                 const taskId = targetId;
-                socket.emit('deleteTodo', taskId);
+                socket.emit('toggleTodo', taskId);
             }
-
-
         }, false);
 
         createTaskForm.addEventListener('submit', (event) => {
@@ -247,6 +232,11 @@ complete the script tag code. -->
         socket.on('deleteTask', (taskId) => {
             deleteTaskDOM(taskId);
         });
+
+        socket.on('toggleTask', (taskData) => {
+            toggleTaskDOM(taskData.taskId, taskData.completed);
+        });
+
 
     </script>
 </body>
